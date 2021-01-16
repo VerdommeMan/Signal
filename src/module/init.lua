@@ -5,11 +5,12 @@ Connection.__index = Connection
 Signal.__index = Signal
 
 function Connection.new(signal)
-    return setmetatable({signal = signal}, Connection)
+    return setmetatable({signal = signal, connected = true}, Connection)
 end
 
 function Connection:disconnect()
     self.signal.connections[self] = nil
+    self.connected = false
 end
 
 function Signal.new()

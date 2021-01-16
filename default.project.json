@@ -1,5 +1,5 @@
 {
-  "name": "benchmarker",
+  "name": "Signal",
   "tree": {
     "$className": "DataModel",
 
@@ -11,7 +11,7 @@
     },
     "ServerScriptService":{
       "$className": "ServerScriptService",
-      "Benchmarker":{
+      "Signal":{
         "$path": "src/module"
       }
     },
