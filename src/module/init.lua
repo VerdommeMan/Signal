@@ -19,7 +19,7 @@ end
 
 function Signal.__call(self, ...)
     for _, callback in pairs(self.connections) do
-        coroutine.wrap(callback)(...)
+        xpcall(coroutine.wrap(callback), print, ...)
     end
 end
 
