@@ -43,9 +43,30 @@ function Signal:wait()
     end
 end
 
+local function printErr(err, thread)
+    warn(err)
+    local s = pcall(function() -- cant rely on format of traceback
+        print("Stack Begin")
+        local lines = debug.traceback(thread):split("\n")
+        for i, line in ipairs(lines) do
+           if i == #lines then continue end -- thx roblox for adding a unneccesary newline
+            print(line)
+        end
+        print("Stack End")
+    end)
+    
+    if not s then
+        warn("debug.traceback has changed the format, this function must be updated")
+    end
+end
+
 function Signal:fire(...)
     for _, callback in pairs(connections[self]) do
-        xpcall(coroutine.wrap(callback), print, ...)
+        local thread = coroutine.create(callback)
+        local s, msg = coroutine.resume(thread, ...)
+        if not s then
+            printErr(msg, thread)
+        end
     end
 end
 
