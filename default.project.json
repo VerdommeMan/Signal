@@ -11,7 +11,7 @@
     },
     "ServerScriptService":{
       "$className": "ServerScriptService",
-      "Signal":{
+      "Bindeable":{
         "$path": "src/module"
       }
     },

@@ -1,50 +1,15 @@
-local Connection = {}
-local Signal = {}
+local Bindable = {}
+Bindable.__index = Bindable
 
-Connection.__index = Connection
-Signal.__index = Signal
+local Signal = require(script.Signal)
 
-function Connection.new(signal)
-    return setmetatable({signal = signal, connected = true}, Connection)
+function Bindable.new()
+    local signal = Signal.new()
+    local fire = signal.fire
+    signal.fire = nil
+    return setmetatable({event = signal, fire = function(_, ...)   
+        fire(signal, ...)     
+    end}, Bindable)
 end
 
-function Connection:disconnect()
-    self.signal.connections[self] = nil
-    self.connected = false
-end
-
-function Signal.new()
-    return setmetatable({connections = {}}, Signal)
-end
-
-function Signal.__call(self, ...)
-    for _, callback in pairs(self.connections) do
-        xpcall(coroutine.wrap(callback), print, ...)
-    end
-end
-
-function Signal:wait()
-    local SENTINEL = {}
-    local connection
-    local currentThread = coroutine.running()
-
-    connection = self:connect(function(...)
-        connection:disconnect()
-        coroutine.resume(currentThread, SENTINEL, ...)
-    end)
-
-    while true do
-        local args = {coroutine.yield()}
-        if args[1] == SENTINEL then
-          return unpack(args, 2)
-        end
-    end
-end
-
-function Signal:connect(callback)
-    local connection = Connection.new(self)
-    self.connections[connection] = callback
-    return connection
-end
-
-return Signal
+return Bindable
