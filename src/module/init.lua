@@ -5,9 +5,9 @@ local Signal = require(script.Signal)
 
 function Bindable.new()
     local signal = Signal.new()
-    local fire = signal.fire
-    signal.fire = nil
-    return setmetatable({event = signal, fire = function(_, ...)   
+    local fire = signal.Fire
+    signal.Fire = nil
+    return setmetatable({Event = signal, Fire = function(_, ...)   
         fire(signal, ...)     
     end}, Bindable)
 end

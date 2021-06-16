@@ -9,12 +9,12 @@ local connections = setmetatable({}, weakMT)
 local map = setmetatable({}, weakMT)
 
 function Connection.new(signal)
-    local self = setmetatable({connected = true}, Connection)
+    local self = setmetatable({Connected = true}, Connection)
     map[self] = signal
     return self
 end
 
-function Connection:disconnect()
+function Connection:Disconnect()
     connections[map[self]][self] = nil
     self.connected = false
 end
@@ -25,7 +25,7 @@ function Signal.new()
     return setmetatable(self, Signal)
 end
 
-function Signal:wait()
+function Signal:Wait()
     local SENTINEL = {}
     local connection
     local currentThread = coroutine.running()
@@ -60,7 +60,7 @@ local function printErr(err, thread)
     end
 end
 
-function Signal:fire(...)
+function Signal:Fire(...)
     for _, callback in pairs(connections[self]) do
         local thread = coroutine.create(callback)
         local s, msg = coroutine.resume(thread, ...)
@@ -70,7 +70,7 @@ function Signal:fire(...)
     end
 end
 
-function Signal:connect(callback)
+function Signal:Connect(callback)
     local connection = Connection.new(self)
     connections[self][connection] = callback
     return connection
