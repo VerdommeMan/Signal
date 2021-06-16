@@ -4,17 +4,25 @@ local Signal = {}
 Connection.__index = Connection
 Signal.__index = Signal
 
+local weakMT = {__mode = "k"}
+local connections = setmetatable({}, weakMT)
+local map = setmetatable({}, weakMT)
+
 function Connection.new(signal)
-    return setmetatable({signal = signal, connected = true}, Connection)
+    local self = setmetatable({connected = true}, Connection)
+    map[self] = signal
+    return self
 end
 
 function Connection:disconnect()
-    self.signal.connections[self] = nil
+    connections[map[self]][self] = nil
     self.connected = false
 end
 
 function Signal.new()
-    return setmetatable({connections = {}}, Signal)
+    local self = {}
+    connections[self] = {}
+    return setmetatable(self, Signal)
 end
 
 function Signal:wait()
@@ -36,14 +44,14 @@ function Signal:wait()
 end
 
 function Signal:fire(...)
-    for _, callback in pairs(self.connections) do
+    for _, callback in pairs(connections[self]) do
         xpcall(coroutine.wrap(callback), print, ...)
     end
 end
 
 function Signal:connect(callback)
     local connection = Connection.new(self)
-    self.connections[connection] = callback
+    connections[self][connection] = callback
     return connection
 end
 
