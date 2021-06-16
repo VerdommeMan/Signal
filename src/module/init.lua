@@ -7,9 +7,13 @@ function Bindable.new()
     local signal = Signal.new()
     local fire = signal.Fire
     signal.Fire = nil
-    return setmetatable({Event = signal, Fire = function(_, ...)   
+    signal.fire = nil
+    
+    local function newFire(_, ...)   
         fire(signal, ...)     
-    end}, Bindable)
+    end
+
+    return setmetatable({Event = signal, event = signal, Fire = newFire, fire = newFire}, Bindable)
 end
 
 return Bindable

@@ -1,7 +1,13 @@
 local Connection = {}
 local Signal = {}
 
-Connection.__index = Connection
+function Connection.__index(self, key) -- support camcelCase compatibility
+    if key == "connected" then
+        return rawget(self, "Connected")
+    end
+    return rawget(Connection, key)
+end
+
 Signal.__index = Signal
 
 local weakMT = {__mode = "k"}
@@ -16,7 +22,7 @@ end
 
 function Connection:Disconnect()
     connections[map[self]][self] = nil
-    self.connected = false
+    self.Connected = false
 end
 
 function Signal.new()
@@ -30,8 +36,8 @@ function Signal:Wait()
     local connection
     local currentThread = coroutine.running()
 
-    connection = self:connect(function(...)
-        connection:disconnect()
+    connection = self:Connect(function(...)
+        connection:Disconnect()
         coroutine.resume(currentThread, SENTINEL, ...)
     end)
 
@@ -75,5 +81,11 @@ function Signal:Connect(callback)
     connections[self][connection] = callback
     return connection
 end
+
+-- camelCase compatibility
+Signal.connect = Signal.Connect
+Signal.fire = Signal.Fire
+Signal.wait = Signal.Wait
+Connection.disconnect = Connection.Disconnect
 
 return Signal
