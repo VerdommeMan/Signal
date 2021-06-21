@@ -10,5 +10,6 @@ This is a custom implementation of [BindableEvent](https://developer.roblox.com/
 * No Instance overhead
 * Connections lifecycle aren't tied to the script in which they are created
 * No `Destroy` needed (gced when no references to itself and all its connections are disconnected)
+* Prevents other threads from resuming the thread yielded by `:Wait` unlike bindeable
 
 This branch has support for camelCase.
