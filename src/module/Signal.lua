@@ -39,14 +39,14 @@ function Signal:Wait()
 
     while true do
         local args = {coroutine.yield()}
-        if args[1] == SENTINEL then
+        if args[1] == SENTINEL then -- prevent other threads from resuming this thread
             RunService.Heartbeat:Wait() -- Continuations support
             return unpack(args, 2)
         end
     end
 end
 
-local function printErr(err, thread)
+local function printErr(err, thread) -- reconstruct a stacktrace
     warn(err)
     print("Stack Begin")
     local lines = debug.traceback(thread):split("\n") -- can't rely on output of traceback but this should be exception safe
