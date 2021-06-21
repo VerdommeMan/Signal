@@ -8,6 +8,8 @@ local weakMT = {__mode = "k"}
 local connections = setmetatable({}, weakMT)
 local map = setmetatable({}, weakMT)
 
+local RunService = game:GetService("RunService")
+
 function Connection.new(signal)
     local self = setmetatable({Connected = true}, Connection)
     map[self] = signal
@@ -38,26 +40,21 @@ function Signal:Wait()
     while true do
         local args = {coroutine.yield()}
         if args[1] == SENTINEL then
-          return unpack(args, 2)
+            RunService.Heartbeat:Wait() -- Continuations support
+            return unpack(args, 2)
         end
     end
 end
 
 local function printErr(err, thread)
     warn(err)
-    local s = pcall(function() -- cant rely on format of traceback
-        print("Stack Begin")
-        local lines = debug.traceback(thread):split("\n")
-        for i, line in ipairs(lines) do
-           if i == #lines then continue end -- thx roblox for adding a unneccesary newline
-            print(line)
-        end
-        print("Stack End")
-    end)
-    
-    if not s then
-        warn("debug.traceback has changed the format, this function must be updated")
+    print("Stack Begin")
+    local lines = debug.traceback(thread):split("\n") -- can't rely on output of traceback but this should be exception safe
+    for i, line in ipairs(lines) do
+        if i == #lines then continue end -- thx roblox for adding a unneccesary newline
+        print(line)
     end
+    print("Stack End")
 end
 
 function Signal:Fire(...)
