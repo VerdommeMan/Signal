@@ -11,6 +11,6 @@ This is a custom implementation of [BindableEvent](https://developer.roblox.com/
 * Connections lifecycle aren't tied to the script in which they are created
 * No `Destroy` needed (gced when no references to itself and all its connections are disconnected)
 * Prevents other threads from resuming the thread yielded by `:Wait` unlike bindeable
-* Properly encapsulated the private properties (unlike many other signal/bindeable replacements)
+* Properly encapsulates the private properties (unlike many other signal/bindeable replacements)
 
 [Use this branch if you need camelCase compatibility](https://github.com/VerdommeMan/Signal/tree/camelCase_compatibility)
